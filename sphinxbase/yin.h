@@ -114,4 +114,3 @@ int yin_read(yin_t *pe, uint16 *out_period, uint16 *out_bestdiff);
 #endif
 
 #endif /* __YIN_H__ */
-

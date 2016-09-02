@@ -77,8 +77,7 @@ typedef enum ngram_file_type_e {
     NGRAM_INVALID = -1, /**< Not a valid file type. */
     NGRAM_AUTO,  /**< Determine file type automatically. */
     NGRAM_ARPA,  /**< ARPABO text format (the standard). */
-    NGRAM_DMP,   /**< Sphinx .DMP format. */
-    NGRAM_DMP32, /**< Sphinx .DMP32 format (NOT SUPPORTED) */
+    NGRAM_BIN    /**< Sphinx .DMP format. */
 } ngram_file_type_t;
 
 #define NGRAM_INVALID_WID -1 /**< Impossible word ID */
@@ -92,7 +91,6 @@ typedef enum ngram_file_type_e {
  *  - -mmap (boolean) whether to use memory-mapped I/O
  *  - -lw (float32) language weight to apply to the model
  *  - -wip (float32) word insertion penalty to apply to the model
- *  - -uw (float32) unigram weight to apply to the model
  *
  * @param file_name path to the file to read.
  * @param file_type type of the file, or NGRAM_AUTO to determine automatically.
@@ -160,25 +158,6 @@ SPHINXBASE_EXPORT
 int ngram_model_free(ngram_model_t *model);
 
 /**
- * Re-encode word strings in an N-Gram model.
- *
- * Character set names are the same as those passed to iconv(1).  If
- * your system does not have iconv, this function may fail.  Also,
- * because all file formats consist of 8-bit character streams,
- * attempting to convert to or from UTF-16 (or any other encoding
- * which contains null bytes) is a recipe for total desaster.
- *
- * We have no interest in supporting UTF-16, so don't ask.
- *
- * Note that this does not affect any pronunciation dictionary you
- * might currently be using in conjunction with this N-Gram model, so
- * the effect of calling this during decoding is undefined.  That's a
- * bug!
- */
-SPHINXBASE_EXPORT
-int ngram_model_recode(ngram_model_t *model, const char *from, const char *to);
-
-/**
  * Constants for case folding.
  */
 typedef enum ngram_case_e {
@@ -204,23 +183,21 @@ int ngram_model_casefold(ngram_model_t *model, int kase);
  * values we actually need.  Call ngram_prob() if you want the "raw"
  * N-Gram probability estimate.
  *
- * To remove all weighting, call ngram_apply_weights(model, 1.0, 1.0, 1.0).
+ * To remove all weighting, call ngram_apply_weights(model, 1.0, 1.0).
  */
 SPHINXBASE_EXPORT
 int ngram_model_apply_weights(ngram_model_t *model,
-                              float32 lw, float32 wip, float32 uw);
+                              float32 lw, float32 wip);
 
 /**
  * Get the current weights from a language model.
  *
  * @param model The model in question.
  * @param out_log_wip Output: (optional) logarithm of word insertion penalty.
- * @param out_log_uw Output: (optional) logarithm of unigram weight.
  * @return language weight.
  */
 SPHINXBASE_EXPORT
-float32 ngram_model_get_weights(ngram_model_t *model, int32 *out_log_wip,
-                                int32 *out_log_uw);
+float32 ngram_model_get_weights(ngram_model_t *model, int32 *out_log_wip);
 
 /**
  * Get the score (scaled, interpolated log-probability) for a general
@@ -291,7 +268,20 @@ int32 ngram_ng_score(ngram_model_t *model, int32 wid, int32 *history,
  * unigram weight (interpolation with uniform) is not removed.
  */
 SPHINXBASE_EXPORT
-int32 ngram_prob(ngram_model_t *model, const char *word, ...);
+int32 ngram_probv(ngram_model_t *model, const char *word, ...);
+
+/**
+ * Get the "raw" log-probability for a general N-Gram.
+ *
+ * This returns the log-probability of an N-Gram, as defined in the
+ * language model file, before any language weighting, interpolation,
+ * or insertion penalty has been applied.
+ *
+ * @note When backing off to a unigram from a bigram or trigram, the
+ * unigram weight (interpolation with uniform) is not removed.
+ */
+SPHINXBASE_EXPORT
+int32 ngram_prob(ngram_model_t *model, const char *const *words, int32 n);
 
 /**
  * Quick "raw" probability lookup for a general N-Gram.
@@ -361,7 +351,7 @@ int32 ngram_model_get_size(ngram_model_t *model);
  * Get the counts of the various N-grams in the model.
  */
 SPHINXBASE_EXPORT
-int32 const *ngram_model_get_counts(ngram_model_t *model);
+uint32 const *ngram_model_get_counts(ngram_model_t *model);
 
 /**
  * M-gram iterator object.
@@ -445,7 +435,7 @@ int32 ngram_model_add_word(ngram_model_t *model,
  *
  * This function assumes that the class tags have already been defined
  * as unigrams in the language model.  All words in the class
- * definition will be added to the lexicon as special in-class words.
+ * definition will be added to the vocabulary as special in-class words.
  * For this reason is is necessary that they not have the same names
  * as any words in the general unigram distribution.  The convention
  * is to suffix them with ":class_tag", where class_tag is the class
@@ -700,11 +690,7 @@ SPHINXBASE_EXPORT
 int32 ngram_model_set_known_wid(ngram_model_t *set, int32 set_wid);
 
 /**
- * Flush any cached N-Gram information 
- *
- * Some types of models cache trigram or other N-Gram information to
- * speed repeated access to N-Grams with shared histories.  This
- * function flushes the cache so as to avoid dynamic memory leaks.
+ * Flush any cached N-Gram information
  */
 SPHINXBASE_EXPORT
 void ngram_model_flush(ngram_model_t *lm);

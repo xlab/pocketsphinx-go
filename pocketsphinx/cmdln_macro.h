@@ -48,12 +48,13 @@
 #define POCKETSPHINX_OPTIONS \
     waveform_to_cepstral_command_line_macro(), \
     cepstral_to_feature_command_line_macro(), \
-    POCKETSPHINX_ACMOD_OPTIONS, \
+    POCKETSPHINX_ACMOD_OPTIONS,      \
         POCKETSPHINX_BEAM_OPTIONS,   \
         POCKETSPHINX_SEARCH_OPTIONS, \
-        POCKETSPHINX_DICT_OPTIONS, \
-        POCKETSPHINX_NGRAM_OPTIONS, \
-        POCKETSPHINX_FSG_OPTIONS, \
+        POCKETSPHINX_DICT_OPTIONS,   \
+        POCKETSPHINX_NGRAM_OPTIONS,  \
+        POCKETSPHINX_FSG_OPTIONS,    \
+        POCKETSPHINX_KWS_OPTIONS,    \
         POCKETSPHINX_DEBUG_OPTIONS
 
 /** Options for debugging and logging. */
@@ -61,13 +62,11 @@
     { "-logfn",                                         \
             ARG_STRING,                                 \
             NULL,                                       \
-            "File to write log messages in"             \
-     },                                                 \
+            "File to write log messages in" },          \
     { "-debug",                                         \
             ARG_INT32,                                  \
             NULL,                                       \
-            "Verbosity level for debugging messages"    \
-     },                                                 \
+            "Verbosity level for debugging messages" }, \
      { "-mfclogdir",                                    \
              ARG_STRING,                                \
              NULL,                                      \
@@ -77,7 +76,7 @@
             ARG_STRING,                                 \
             NULL,                                       \
             "Directory to log raw audio files to" },    \
-     { "-senlogdir",                                    \
+    { "-senlogdir",                                     \
              ARG_STRING,                                \
              NULL,                                      \
              "Directory to log senone score files to"   \
@@ -115,7 +114,7 @@
       "Beam width applied to word exits in second-pass flat search" },  \
 { "-pl_window",                                                         \
       ARG_INT32,                                                        \
-      "0",                                                              \
+      "5",                                                              \
       "Phoneme lookahead window size, in frames" },                     \
 { "-pl_beam",                                                           \
       ARG_FLOAT64,                                                      \
@@ -123,8 +122,16 @@
       "Beam width applied to phone loop search for lookahead" },        \
 { "-pl_pbeam",                                                          \
       ARG_FLOAT64,                                                      \
-      "1e-5",                                                           \
-      "Beam width applied to phone loop transitions for lookahead" }
+      "1e-10",                                                          \
+      "Beam width applied to phone loop transitions for lookahead" },   \
+{ "-pl_pip",                                                            \
+      ARG_FLOAT32,                                                      \
+      "1.0",                                                            \
+      "Phone insertion penalty for phone loop" },                       \
+{ "-pl_weight",                                                         \
+      ARG_FLOAT64,                                                      \
+      "3.0",                                                            \
+      "Weight for phoneme lookahead penalties" }                        \
 
 /** Options defining other parameters for tuning the search. */
 #define POCKETSPHINX_SEARCH_OPTIONS \
@@ -147,7 +154,7 @@
 { "-backtrace",                                                                                 \
       ARG_BOOLEAN,                                                                              \
       "no",                                                                                     \
-      "Print results and backtraces to log file." },                                            \
+      "Print results and backtraces to log." },                                                 \
 { "-latsize",                                                                                   \
       ARG_INT32,                                                                                \
       "5000",                                                                                   \
@@ -158,7 +165,7 @@
       "Maximum number of distinct word exits at each frame (or -1 for no pruning)" },           \
 { "-maxhmmpf",                                                                                  \
       ARG_INT32,                                                                                \
-      "-1",                                                                                     \
+      "30000",                                                                                  \
       "Maximum number of active HMMs to maintain at each frame (or -1 for no pruning)" },       \
 { "-min_endfr",                                                                                 \
       ARG_INT32,                                                                                \
@@ -172,6 +179,29 @@
       ARG_INT32,                                                                                \
       "25",                                                                    	                \
       "Window of frames in lattice to search for successor words in fwdflat search " }
+
+/** Command-line options for keyphrase spotting */
+#define POCKETSPHINX_KWS_OPTIONS \
+{ "-keyphrase",                                                 \
+         ARG_STRING,                                            \
+         NULL,                                                  \
+         "Keyphrase to spot"},                                  \
+{ "-kws",                                                       \
+         ARG_STRING,                                            \
+         NULL,                                                  \
+         "A file with keyphrases to spot, one per line"},       \
+{ "-kws_plp",                                                   \
+      ARG_FLOAT64,                                              \
+      "1e-1",                                                   \
+      "Phone loop probability for keyphrase spotting" },          \
+{ "-kws_delay",                                                 \
+      ARG_INT32,                                                \
+      "10",                                                     \
+      "Delay to wait for best detection score" },               \
+{ "-kws_threshold",                                             \
+      ARG_FLOAT64,                                              \
+      "1",                                                      \
+      "Threshold for p(hyp)/p(alternatives) ratio" }
 
 /** Command-line options for finite state grammars. */
 #define POCKETSPHINX_FSG_OPTIONS \
@@ -198,6 +228,14 @@
 
 /** Command-line options for statistical language models. */
 #define POCKETSPHINX_NGRAM_OPTIONS \
+{ "-allphone",										\
+      ARG_STRING,									\
+      NULL,										\
+      "Perform phoneme decoding with phonetic lm" },					\
+{ "-allphone_ci",									\
+      ARG_BOOLEAN,									\
+      "no",										\
+      "Perform phoneme decoding with phonetic lm and context-independent units only" }, \
 { "-lm",										\
       ARG_STRING,									\
       NULL,										\
@@ -205,10 +243,10 @@
 { "-lmctl",										\
       ARG_STRING,									\
       NULL,										\
-      "Specify a set of language model\n"},						\
+      "Specify a set of language model"},						\
 { "-lmname",										\
       ARG_STRING,									\
-      "default",									\
+      NULL,									\
       "Which language model in -lmctl to use by default"},				\
 { "-lw",										\
       ARG_FLOAT32,									\
@@ -249,15 +287,7 @@
 { "-fillprob",										\
       ARG_FLOAT32,									\
       "1e-8",										\
-        "Filler word transition probability" }, \
-{ "-bghist",   \
-      ARG_BOOLEAN, \
-      "no", \
-      "Bigram-mode: If TRUE only one BP entry/frame; else one per LM state" }, \
-{ "-lextreedump", \
-      ARG_INT32, \
-      "0", \
-      "Whether to dump the lextree structure to stderr (for debugging), 1 for Ravi's format, 2 for Dot format, Larger than 2 will be treated as Ravi's format" }
+        "Filler word transition probability" } \
 
 /** Command-line options for dictionaries. */
 #define POCKETSPHINX_DICT_OPTIONS \
@@ -272,15 +302,7 @@
     { "-dictcase",						\
       ARG_BOOLEAN,						\
       "no",							\
-      "Dictionary is case sensitive (NOTE: case insensitivity applies to ASCII characters only)" },	\
-    { "-maxnewoov",						\
-      ARG_INT32,						\
-      "20",							\
-      "Maximum new OOVs that can be added at run time" },	\
-    { "-usewdphones",						\
-      ARG_BOOLEAN,						\
-      "no",							\
-      "Use within-word phones only" }
+      "Dictionary is case sensitive (NOTE: case insensitivity applies to ASCII characters only)" }	\
 
 /** Command-line options for acoustic modeling */
 #define POCKETSPHINX_ACMOD_OPTIONS \
@@ -356,18 +378,6 @@
       ARG_STRING,                                                               \
       "0",                                                                     \
       "Beam width used to determine top-N Gaussians (or a list, per-feature)" },\
-{ "-kdtree",                                                                    \
-      ARG_STRING,                                                               \
-      NULL,                                                                     \
-      "kd-Tree file for Gaussian selection" },                                  \
-{ "-kdmaxdepth",                                                                \
-      ARG_INT32,                                                                \
-      "0",                                                                      \
-      "Maximum depth of kd-Trees to use" },                                     \
-{ "-kdmaxbbi",                                                                  \
-      ARG_INT32,                                                                \
-      "-1",                                                                     \
-      "Maximum number of Gaussians per leaf node in kd-Trees" },                \
 { "-logbase",                                                                   \
       ARG_FLOAT32,                                                              \
       "1.0001",                                                                 \

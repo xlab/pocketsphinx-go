@@ -345,6 +345,19 @@ SPHINXBASE_EXPORT
 void cmd_ln_set_str_r(cmd_ln_t *cmdln, char const *name, char const *str);
 
 /**
+ * Set a string in a command-line object even if it is not present in argument
+ * description. Useful for setting extra values computed from configuration, propagated
+ * to other parts.
+ *
+ * @param cmdln Command-line object.
+ * @param name The command-line flag to set.
+ * @param str String value to set.  The command-line object does not
+ *            retain ownership of this pointer.
+ */
+SPHINXBASE_EXPORT
+void cmd_ln_set_str_extra_r(cmd_ln_t *cmdln, char const *name, char const *str);
+
+/**
  * Set an integer in a command-line object.
  *
  * @param cmdln Command-line object.
@@ -391,12 +404,23 @@ int cmd_ln_exists_r(cmd_ln_t *cmdln, char const *name);
 /**
  * Print a help message listing the valid argument names, and the associated
  * attributes as given in defn.
+ *
+ * @param cmdln command-line object
+ * @param fp   output stream
+ * @param defn array of argument name definitions.
  */
 SPHINXBASE_EXPORT
-void cmd_ln_print_help_r (cmd_ln_t *cmdln,
-                          FILE *fp,	   /**< In: File to which to print */
-			  const arg_t *defn /**< In: Array of argument name definitions */
-	);
+void cmd_ln_print_help_r (cmd_ln_t *cmdln, FILE *fp, const arg_t *defn);
+
+/**
+ * Print current configuration values and defaults.
+ *
+ * @param cmdln  command-line object
+ * @param fp   output stream
+ * @param defn array of argument name definitions.
+ */
+SPHINXBASE_EXPORT
+void cmd_ln_print_values_r (cmd_ln_t *cmdln, FILE *fp, const arg_t *defn);
 
 /**
  * Non-reentrant version of cmd_ln_parse().
@@ -583,5 +607,3 @@ void cmd_ln_free (void);
 #endif
 
 #endif
-
-
