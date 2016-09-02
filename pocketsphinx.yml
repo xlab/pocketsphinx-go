@@ -17,13 +17,16 @@ TRANSLATOR:
       - {target: "^FILE$", self: raw}
   PtrTips:
     function:
+      - {target: "_args$", self: arr}
+      - {target: "_lookup_word$", self: arr, tips: [ref,0]}
       - {target: "_get_prob$", tips: [ref]}
-      - {target: "_get_hyp$", tips: [ref,0,arr]}
+      - {target: "_get_rawdata$", tips: [ref,arr,ref]}
       - {target: "_process_raw$", tips: [ref]}
       - {target: "_process_cep$", tips: [ref]}
       - {target: "_ln_parse$", tips: [ref,0,arr,0]}
       - {target: "_ln_appl_enter$", tips: [ref,arr,0,ref]}
-      - {target: "_ln_parse_r$", tips: [ref,ref,0,arr,0]}
+      - {target: "_ln_parse_r$", tips: [ref,arr,0,arr,0]}
+      - {target: "_ln_parse_file_r$", tips: [ref,arr,0,0]}
       - {target: "_ln_str_list_r$", self: arr, tips: [ref]}
       - {target: "_process_frame$", tips: [ref,arr,0,ref]}
       - {target: "_latlink_nodes$", tips: [ref,sref]}

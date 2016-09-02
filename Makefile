@@ -7,3 +7,7 @@ clean:
 
 test:
 	cd pocketsphinx && go build
+
+install:
+	cd pocketsphinx && go install
+	
