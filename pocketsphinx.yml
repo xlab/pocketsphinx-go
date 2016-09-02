@@ -18,6 +18,7 @@ TRANSLATOR:
   PtrTips:
     function:
       - {target: "_get_prob$", tips: [ref]}
+      - {target: "_get_hyp$", tips: [ref,0,arr]}
       - {target: "_process_raw$", tips: [ref]}
       - {target: "_process_cep$", tips: [ref]}
       - {target: "_ln_parse$", tips: [ref,0,arr,0]}
