@@ -57,6 +57,17 @@ TRANSLATOR:
       - {action: ignore, from: "ngram_iter$"} # variadic
       - {action: ignore, from: "ngram_prob$"} # variadic
       - {action: ignore, from: "ngram_score$"} # variadic
+      - {action: ignore, from: "ngram_probv$"} # variadic
+
+      - {action: ignore, from: "_search_iter_val$"} # bugged in master
+      
+      # these symbols are missing when linking, I don't know why
+      - {action: ignore, from: "ngram_iter_free$"}
+      - {action: ignore, from: "ngram_iter_get$"}
+      - {action: ignore, from: "ngram_iter_next$"}
+      - {action: ignore, from: "ngram_iter_successors$"}
+      - {action: ignore, from: "ngram_model_mgrams$"}
+      - {action: ignore, from: "ngram_ng_iter$"}
 
       - {action: ignore, from: "_model_null_trans_closure$"}
       - {action: ignore, from: "_mfcc_to_float$"}
