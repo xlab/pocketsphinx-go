@@ -72,6 +72,7 @@ func (d *Decoder) LogMath() *LogMath {
 	}
 }
 
+// Decoder returns a retained copy of underlying reference to pocketsphinx.Decoder.
 func (d *Decoder) Decoder() *pocketsphinx.Decoder {
 	return pocketsphinx.Retain(d.dec)
 }
@@ -100,7 +101,7 @@ func (d *Decoder) UpdateMLLR(mllr *MLLR) *MLLR {
 	return nil
 }
 
-// LoadDict reloads the pronunciation dictionary from a file.
+// ReadDict reloads the pronunciation dictionary from a file.
 //
 // This function replaces the current pronunciation dictionary with
 // the one stored in dictFile. This also causes the active search
@@ -110,14 +111,14 @@ func (d *Decoder) UpdateMLLR(mllr *MLLR) *MLLR {
 // dictFile is the path to dictionary file to load.
 // fillerDictFile is the path to filler dictionary to load,
 // or empty string to keep the existing filler dictionary.
-func (d *Decoder) LoadDict(dictFile, fillerDictFile string) bool {
-	ret := pocketsphinx.LoadDict(d.dec, dictFile+"\x00", fillerDictFile+"\x00", "\x00")
+func (d *Decoder) ReadDict(dictFile, fillerDictFile String) bool {
+	ret := pocketsphinx.LoadDict(d.dec, dictFile.S(), fillerDictFile.S(), end)
 	return ret == 0
 }
 
-// DumpDict dumps the current pronunciation dictionary to a file.
-func (d *Decoder) DumpDict(dictFile string) bool {
-	ret := pocketsphinx.SaveDict(d.dec, dictFile+"\x00", "\x00")
+// WriteDict writes the current pronunciation dictionary to a file.
+func (d *Decoder) WriteDict(dictFile String) bool {
+	ret := pocketsphinx.SaveDict(d.dec, dictFile.S(), end)
 	return ret == 0
 }
 
@@ -181,7 +182,7 @@ func (d *Decoder) EndUtt() bool {
 // ProcessRaw decodes a raw audio stream.
 //
 // No headers are recognized in this files. The configuration
-// parameters "-samprate" and "-input_endian" are used
+// parameters SampleRateOption and InputEndianOption are used
 // to determine the sampling rate and endianness of the stream,
 // respectively. Audio is always assumed to be 16-bit signed PCM.
 //
@@ -245,9 +246,9 @@ func (d *Decoder) Hypothesis() (hyp string, score int32) {
 
 // Probability gets posterior probability of the best hypothesis.
 //
-// Unless the "-bestpath" option is enabled, this function will
+// Unless the BestpathOption option is enabled, this function will
 // always return zero (corresponding to a posterior probability of
-// 1.0). Even if "-bestpath" is enabled, it will also return zero when
+// 1.0). Even if BestpathOption is enabled, it will also return zero when
 // called on a partial result. Ongoing research into effective
 // confidence annotation for partial hypotheses may result in these
 // restrictions being lifted in future versions.
@@ -305,9 +306,9 @@ func (d *Decoder) IsInSpeech() bool {
 	return v == 1
 }
 
-// SetRawdataSize sets the limit of the raw audio data to store in decoder
-// to retrieve it later with Decoder.Rawdata().
-func (d *Decoder) SetRawdataSize(frames int32) {
+// SetRawDataSize sets the limit of the raw audio data to store in decoder
+// to retrieve it later with Decoder.RawData().
+func (d *Decoder) SetRawDataSize(frames int32) {
 	d.maxRawdataSize = frames
 	d.rawdataBuf = [][]int16{
 		make([]int16, frames),
@@ -315,8 +316,8 @@ func (d *Decoder) SetRawdataSize(frames int32) {
 	pocketsphinx.SetRawdataSize(d.dec, frames*2)
 }
 
-// Retrieves the raw data collected during utterance decoding.
-func (d *Decoder) Rawdata() []int16 {
+// RawData retrieves the raw data collected during utterance decoding.
+func (d *Decoder) RawData() []int16 {
 	var size int32
 	pocketsphinx.GetRawdata(d.dec, d.rawdataBuf, &size)
 	return d.rawdataBuf[0][:size/2]

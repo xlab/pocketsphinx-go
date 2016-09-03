@@ -2,13 +2,53 @@ package sphinx
 
 import "github.com/xlab/pocketsphinx-go/pocketsphinx"
 
+/*
+ * Fast integer logarithmic addition operations.
+ *
+ * In evaluating HMM models, probability values are often kept in log
+ * domain, to avoid overflow.  To enable these logprob values to be
+ * held in int32 variables without significant loss of precision, a
+ * logbase of (1+epsilon) (where epsilon < 0.01 or so) is used.  This
+ * module maintains this logbase (B).
+ *
+ * However, maintaining probabilities in log domain creates a problem
+ * when adding two probability values.  This problem can be solved by
+ * table lookup.  Note that:
+ *
+ *  - \f$ b^z = b^x + b^y \f$
+ *  - \f$ b^z = b^x(1 + b^{y-x})     = b^y(1 + e^{x-y}) \f$
+ *  - \f$ z   = x + log_b(1 + b^{y-x}) = y + log_b(1 + b^{x-y}) \f$
+ *
+ * So:
+ *
+ *  - when \f$ y > x, z = y + logadd\_table[-(x-y)] \f$
+ *  - when \f$ x > y, z = x + logadd\_table[-(y-x)] \f$
+ *  - where \f$ logadd\_table[n] = log_b(1 + b^{-n}) \f$
+ *
+ * The first entry in <i>logadd_table</i> is
+ * simply \f$ log_b(2.0) \f$, for
+ * the case where \f$ y = x \f$ and thus
+ * \f$ z = log_b(2x) = log_b(2) + x \f$.  The last entry is zero,
+ * where \f$ log_b(x+y) = x = y \f$ due to loss of precision.
+ *
+ * Since this table can be quite large particularly for small
+ * logbases, an option is provided to compress it by dropping the
+ * least significant bits of the table.
+ */
+
+// LogMath integer log math computation class.
 type LogMath struct {
 	m *pocketsphinx.Logmath
 }
 
-// DumpTo writes a log table to a file.
-func (l LogMath) DumpTo(filename string) bool {
-	ret := pocketsphinx.LogmathWrite(l.m, filename+"\x00")
+// LogMath returns a retained copy of underlying reference to pocketsphinx.Logmath.
+func (l *LogMath) LogMath() *pocketsphinx.Logmath {
+	return pocketsphinx.Retain(l.m)
+}
+
+// WriteTo writes a log table to a file.
+func (l LogMath) WriteTo(filename String) bool {
+	ret := pocketsphinx.LogmathWrite(l.m, filename.S())
 	return ret == 0
 }
 

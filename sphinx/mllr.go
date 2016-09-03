@@ -10,6 +10,11 @@ type MLLR struct {
 	m *pocketsphinx.Mllr
 }
 
+// MLLR returns a retained copy of underlying reference to pocketsphinx.Mllr.
+func (m *MLLR) MLLR() *pocketsphinx.Mllr {
+	return pocketsphinx.MllrRetain(m.m)
+}
+
 func (m *MLLR) Retain() {
 	m.m = pocketsphinx.MllrRetain(m.m)
 }
