@@ -44,8 +44,9 @@ TRANSLATOR:
       - {target: "_tg_score$", tips: [ref,0,0,0,ref]}
       - {target: "_bg_score$", tips: [ref,0,0,ref]}
       - {target: "_ng_score$", tips: [ref,0,arr,0,ref]}
-      - {target: "_get_counts$", self: arr}
+      - {target: "_get_counts$", self: arr, tips: [ref]}
       - {target: "ngram_prob$", tips: [ref,arr,0]}
+      - {target: "_ng_prob$", tips: [ref,0,arr,0,ref]}
       - {target: "^ps_", tips: [ref,ref,ref,ref]}
       - {target: "^cmd_", tips: [ref,ref,ref,ref]}
       - {target: "^ngram_", tips: [ref,ref,ref,ref]}
