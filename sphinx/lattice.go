@@ -44,7 +44,7 @@ func (d *Decoder) NewLattice(filename String) (*Lattice, error) {
 
 // Lattice returns a retained copy of underlying reference to pocketsphinx.Lattice.
 func (l *Lattice) Lattice() *pocketsphinx.Lattice {
-	return pocketsphinx.Retain(l.lat)
+	return pocketsphinx.LatticeRetain(l.lat)
 }
 
 func (l *Lattice) Retain() {
@@ -118,7 +118,7 @@ func (l *LatticeNodeIter) Node() *LatticeNode {
 // last — end frame of last exit from this node.
 // start — start frame for all edges exiting this node.
 func (l *LatticeNode) Times() (start int32, first, last int16) {
-	start = pocketsphinx.LatnodeTimes((*pocketsphinx.Latnode)(node), &first, &last)
+	start = pocketsphinx.LatnodeTimes((*pocketsphinx.Latnode)(l), &first, &last)
 	return
 }
 
@@ -134,13 +134,13 @@ func (l *Lattice) BaseWord(node *LatticeNode) string {
 
 // Exits returns an iterator over exits from this node.
 func (l *LatticeNode) Exits() *LatticeLinkIter {
-	iter := pocketsphinx.LatnodeExits((*pocketsphinx.Latnode)(node))
+	iter := pocketsphinx.LatnodeExits((*pocketsphinx.Latnode)(l))
 	return (*LatticeLinkIter)(iter)
 }
 
 // Entries returns an iterator over entries to this node.
 func (l *LatticeNode) Entries() *LatticeLinkIter {
-	iter := pocketsphinx.LatnodeEntries((*pocketsphinx.Latnode)(node))
+	iter := pocketsphinx.LatnodeEntries((*pocketsphinx.Latnode)(l))
 	return (*LatticeLinkIter)(iter)
 }
 
@@ -180,14 +180,14 @@ func (l *LatticeLinkIter) Link() *LatticeLink {
 // These are inclusive, i.e. the last frame of
 // this word is end, not end-1.
 func (l *LatticeLink) Times() (start int32, end int16) {
-	start = pocketsphinx.LatlinkTimes((*LatticeLink)(l), &end)
+	start = pocketsphinx.LatlinkTimes((*pocketsphinx.Latlink)(l), &end)
 	return
 }
 
 // Nodes gets destination and source nodes from a lattice link
 func (l *LatticeLink) Nodes() (source, dest *LatticeNode) {
 	var s *pocketsphinx.Latnode
-	d := pocketsphinx.LatlinkNodes((*LatticeLink)(l), &s)
+	d := pocketsphinx.LatlinkNodes((*pocketsphinx.Latlink)(l), &s)
 	return (*LatticeNode)(s), (*LatticeNode)(d)
 }
 
@@ -204,7 +204,7 @@ func (l *Lattice) LinkWord(link *LatticeLink) string {
 
 // LinkBaseWord gets base word string from a lattice link.
 func (l *Lattice) LinkBaseWord(link *LatticeLink) string {
-	return pocketsphinx.LatlinkBaseWord(l.lat, (*pocketsphinx.Latlink)(link))
+	return pocketsphinx.LatlinkBaseword(l.lat, (*pocketsphinx.Latlink)(link))
 }
 
 // LinkProbability gets acoustic score and posterior probability from a lattice link.
@@ -283,8 +283,8 @@ func (l *Lattice) Posterior(model *NGramModel, ascale float32) int32 {
 // from linear floating-point, use Lattice.LogMath().Log(prob).
 //
 // WARN: This function assumes that Lattice.Posterior() has already been called.
-func (l *Lattice) PosteriorPrune(beam float64) int32 {
-	return pocketsphinx.LatticePosterior(l.lat, beam)
+func (l *Lattice) PosteriorPrune(model *NGramModel, ascale float32) int32 {
+	return pocketsphinx.LatticePosterior(l.lat, model.n, ascale)
 }
 
 // NGramExpand expands lattice using an N-gram language model.
@@ -297,6 +297,6 @@ func (l *Lattice) PosteriorPrune(beam float64) int32 {
 // }
 
 // Frames gets the number of frames in the lattice.
-func (l *Lattice) Frames() int {
+func (l *Lattice) Frames() int32 {
 	return pocketsphinx.LatticeNFrames(l.lat)
 }

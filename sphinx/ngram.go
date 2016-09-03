@@ -13,7 +13,7 @@ type NGramModel struct {
 
 // NGramModel returns a retained copy of underlying reference to pocketsphinx.NgramModel.
 func (n *NGramModel) NGramModel() *pocketsphinx.NgramModel {
-	return pocketsphinx.Retain(n.n)
+	return pocketsphinx.NgramModelRetain(n.n)
 }
 
 // NGramOptions is an utility to construct CommandLn for NewNGramModel.
@@ -72,20 +72,27 @@ func (n *NGramOptions) WordInsertionPenalty(v float32) {
 // elsewhere, you must retain it with LogMath.Retain().
 func NewNGramModel(fileName String, fileType NGramFileType,
 	lmath *LogMath, opt ...NGramOptions) (*NGramModel, error) {
+	ftype := (pocketsphinx.NgramFileType)(fileType)
 	if len(opt) > 0 {
-		m := pocketsphinx.NgramModelRead(opt[0].CommandLn(), fileName.S(), fileType, lmath.m)
+		m := pocketsphinx.NgramModelRead(opt[0].CommandLn(), fileName.S(), ftype, lmath.m)
 		if m == nil {
-			err := fmt.Errorf("sphinx: failed to load n-gram model from %s", filename)
+			err := fmt.Errorf("sphinx: failed to load n-gram model from %s", fileName)
 			return nil, err
 		}
-		return m, nil
+		ngram := &NGramModel{
+			n: m,
+		}
+		return ngram, nil
 	}
-	m := pocketsphinx.NgramModelRead(nil, fileName.S(), fileType, lmath.m)
+	m := pocketsphinx.NgramModelRead(nil, fileName.S(), ftype, lmath.m)
 	if m == nil {
-		err := fmt.Errorf("sphinx: failed to load n-gram model from %s", filename)
+		err := fmt.Errorf("sphinx: failed to load n-gram model from %s", fileName)
 		return nil, err
 	}
-	return m, nil
+	ngram := &NGramModel{
+		n: m,
+	}
+	return ngram, nil
 }
 
 func (n *NGramModel) Destroy() bool {
@@ -107,13 +114,13 @@ type NGramFileType int32
 // File types for N-Gram files.
 const (
 	// NGramInvalid is not a valid file type.
-	NGramInvalid NGramFileType = pocketsphinx.NgramInvalid
+	NGramInvalid NGramFileType = NGramFileType(pocketsphinx.NgramInvalid)
 	// NGramAuto to determine file type automatically.
-	NGramAuto NGramFileType = pocketsphinx.NgramAuto
+	NGramAuto NGramFileType = NGramFileType(pocketsphinx.NgramAuto)
 	// NGramArpa is for ARPABO text format (the standard).
-	NGramArpa NGramFileType = pocketsphinx.NgramArpa
+	NGramArpa NGramFileType = NGramFileType(pocketsphinx.NgramArpa)
 	// NGramBin is for sphinx .DMP format.
-	NGramBin NGramFileType = pocketsphinx.NgramBin
+	NGramBin NGramFileType = NGramFileType(pocketsphinx.NgramBin)
 )
 
 // NgramCase as declared in sphinxbase/ngram_model.h:166
@@ -121,8 +128,8 @@ type NGramCase int32
 
 // Constants for case folding.
 const (
-	NGramUpper NGramCase = pocketsphinx.NgramUpper
-	NGramLower NGramCase = pocketsphinx.NgramLower
+	NGramUpper NGramCase = NGramCase(pocketsphinx.NgramUpper)
+	NGramLower NGramCase = NGramCase(pocketsphinx.NgramLower)
 )
 
 // CaseFold word strings in an N-Gram model.
@@ -130,13 +137,13 @@ const (
 // WARNING: This is not Unicode aware, so any non-ASCII characters
 // will not be converted.
 func (n *NGramModel) CaseFold(c NGramCase) bool {
-	ret := pocketsphinx.NgramModelCasefold(n.n, c)
+	ret := pocketsphinx.NgramModelCasefold(n.n, int32(c))
 	return ret == 0
 }
 
 // WriteTo writes an N-Gram model to disk.
 func (n *NGramModel) WriteTo(filename String, format NGramFileType) bool {
-	ret := pocketsphinx.NgramModelWrite(n.n, filename.S(), format)
+	ret := pocketsphinx.NgramModelWrite(n.n, filename.S(), (pocketsphinx.NgramFileType)(format))
 	return ret == 0
 }
 
@@ -271,7 +278,7 @@ func (n *NGramModel) Counts() []uint32 {
 // The semantics of this are not particularly well-defined for
 // model sets, and may be subject to change. Currently this will add
 // the word to all of the submodels
-func (n *NGramModel) AddWord(word String, weight int32) int32 {
+func (n *NGramModel) AddWord(word String, weight float32) int32 {
 	id := pocketsphinx.NgramModelAddWord(n.n, word.S(), weight)
 	return id
 }
@@ -296,7 +303,7 @@ func (n *NGramModel) ReadClassDef(filename String) bool {
 // then it will be converted to a class tag, and weight will be ignored.
 // Otherwise, a new unigram will be created as in NGramModel.AddWord().
 func (n *NGramModel) AddClass(className String, weight float32, words Strings, weights []float32) bool {
-	ret := pocketsphinx.NgramModelAddClass(n.n, className.S(), weight, words.S(), weights, int32(len(words)))
+	ret := pocketsphinx.NgramModelAddClass(n.n, className.S(), weight, words.B(), weights, int32(len(words)))
 	return ret == 0
 }
 

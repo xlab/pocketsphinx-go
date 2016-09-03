@@ -34,7 +34,7 @@ func NewDecoder(cfg *Config) (*Decoder, error) {
 		err := errors.New("pocketsphinx.Init failed")
 		return nil, err
 	}
-	dec.SetRawdataSize(0)
+	dec.SetRawDataSize(0)
 	return dec, nil
 }
 

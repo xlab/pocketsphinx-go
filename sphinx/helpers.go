@@ -13,6 +13,15 @@ type String string
 
 type Strings []string
 
+func (s Strings) B() [][]byte {
+	strs := s.S()
+	results := make([][]byte, 0, len(strs))
+	for _, s := range strs {
+		results = append(results, []byte(s))
+	}
+	return results
+}
+
 func (s Strings) S() []string {
 	for i := range s {
 		if len(s[i]) == 0 {
@@ -28,59 +37,59 @@ func (s Strings) S() []string {
 }
 
 var end = "\x00"
-var endChar = '\x00'
+var endChar byte = '\x00'
 
 func (s String) S() string {
 	if len(s) == 0 {
 		return end
 	}
 	if s[len(s)-1] != endChar {
-		return s + end
+		return string(s) + end
 	}
-	return s
+	return string(s)
 }
 
 func optToCommandLn(prevLn *pocketsphinx.CommandLn, opt map[String]interface{}) *pocketsphinx.CommandLn {
 	if prevLn == nil {
 		prevLn = pocketsphinx.NewCommandLn()
 	}
-	for name, v := range n.opt {
+	for name, v := range opt {
 		switch x := v.(type) {
 		case String:
-			pocketsphinx.CommandLnSetStrR(ln, name.S(), x.S())
+			pocketsphinx.CommandLnSetStrR(prevLn, name.S(), x.S())
 		case string:
-			pocketsphinx.CommandLnSetStrR(ln, name.S(), String(x).S())
+			pocketsphinx.CommandLnSetStrR(prevLn, name.S(), String(x).S())
 		case float32:
-			pocketsphinx.CommandLnSetFloatR(ln, name.S(), float64(x))
+			pocketsphinx.CommandLnSetFloatR(prevLn, name.S(), float64(x))
 		case float64:
-			pocketsphinx.CommandLnSetFloatR(ln, name.S(), x)
+			pocketsphinx.CommandLnSetFloatR(prevLn, name.S(), x)
 		case bool:
 			if x {
-				pocketsphinx.CommandLnSetIntR(ln, name.S(), 1)
+				pocketsphinx.CommandLnSetIntR(prevLn, name.S(), 1)
 			} else {
-				pocketsphinx.CommandLnSetIntR(ln, name.S(), 0)
+				pocketsphinx.CommandLnSetIntR(prevLn, name.S(), 0)
 			}
 		case int8:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case int16:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case int32:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case int64:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case int:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case uint8:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case uint16:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case uint32:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case uint64:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		case uint:
-			pocketsphinx.CommandLnSetIntR(ln, name.S(), int(x))
+			pocketsphinx.CommandLnSetIntR(prevLn, name.S(), int(x))
 		}
 	}
-	return ln
+	return prevLn
 }

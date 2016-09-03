@@ -43,7 +43,7 @@ type LogMath struct {
 
 // LogMath returns a retained copy of underlying reference to pocketsphinx.Logmath.
 func (l *LogMath) LogMath() *pocketsphinx.Logmath {
-	return pocketsphinx.Retain(l.m)
+	return pocketsphinx.LogmathRetain(l.m)
 }
 
 // WriteTo writes a log table to a file.
