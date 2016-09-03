@@ -9,11 +9,15 @@ GENERATOR:
 PARSER: 
   IncludePaths: ["/usr/include", "pocketsphinx/"]
   SourcesPaths: ["pocketsphinx/pocketsphinx.h"]
+  Defines:
+    # NOT_IMPLEMENTED_YET: 1
 
 TRANSLATOR: 
   ConstRules: 
     defines: eval
   MemTips:
+      - {target: "_get_feat$", self: raw}
+      - {target: "feat_t$", self: raw}
       - {target: "^FILE$", self: raw}
   PtrTips:
     function:
@@ -37,6 +41,11 @@ TRANSLATOR:
       - {target: "_model_add_class$", tips: [ref,0,0,arr,arr,0]}
       - {target: "_model_set_init$", tips: [ref,ref,arr,arr,0]}
       - {target: "_ng_iter$", tips: [ref,0,arr,0]}
+      - {target: "_tg_score$", tips: [ref,0,0,0,ref]}
+      - {target: "_bg_score$", tips: [ref,0,0,ref]}
+      - {target: "_ng_score$", tips: [ref,0,arr,0,ref]}
+      - {target: "_get_counts$", self: arr}
+      - {target: "ngram_prob$", tips: [ref,arr,0]}
       - {target: "^ps_", tips: [ref,ref,ref,ref]}
       - {target: "^cmd_", tips: [ref,ref,ref,ref]}
       - {target: "^ngram_", tips: [ref,ref,ref,ref]}
@@ -58,7 +67,6 @@ TRANSLATOR:
     function:
       - {action: ignore, from: "cmd_ln_init$"} # variadic
       - {action: ignore, from: "ngram_iter$"} # variadic
-      - {action: ignore, from: "ngram_prob$"} # variadic
       - {action: ignore, from: "ngram_score$"} # variadic
       - {action: ignore, from: "ngram_probv$"} # variadic
 
@@ -76,8 +84,6 @@ TRANSLATOR:
       - {action: ignore, from: "_mfcc_to_float$"}
       - {action: ignore, from: "_float_to_mfcc$"}
       - {action: ignore, from: "_model_trans$"}
-      - {action: ignore, from: "_lattice_read$"}
-      - {action: ignore, from: "_get_feat$"}
 
       - {action: replace, from: "_search_iter$", to: "_get_search_iter"}
       - {action: replace, from: "_set_iter$", to: "_get_set_iter"}
@@ -85,10 +91,13 @@ TRANSLATOR:
       - {action: replace, from: "_latnode_iter$", to: "_get_latnode_iter"}
     const:
       - {action: accept, from: "^NGRAM_"}
+      - {action: accept, from: "^ARG_"}
       - {action: accept, from: "^FE_"}
     type: 
       - {action: accept, from: "^fe_"}
+      - {action: accept, from: "^feat_"}
       - {action: accept, from: "^FILE$"}
+      - {action: replace, from: "_s$", to: "_t"}
       - {action: replace, from: "_t$"}
     private:
       - {transform: unexport}
