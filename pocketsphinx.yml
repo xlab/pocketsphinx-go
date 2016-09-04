@@ -72,6 +72,7 @@ TRANSLATOR:
       - {action: ignore, from: "ngram_probv$"} # variadic
 
       - {action: ignore, from: "_search_iter_val$"} # bugged in master
+      - {action: replace, from: "^_args$", to: "_args0"} # returns array, helper needed
       
       # these symbols are missing when linking, I don't know why
       - {action: ignore, from: "ngram_iter_free$"}
