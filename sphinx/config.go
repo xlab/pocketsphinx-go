@@ -34,7 +34,8 @@ func (c *Config) CommandLn() *pocketsphinx.CommandLn {
 	if c.evaluated != nil {
 		return c.evaluated
 	}
-	prevLn := pocketsphinx.CommandLnGet()
+	defn := pocketsphinx.Args()
+	prevLn := pocketsphinx.CommandLnParseR(nil, defn, 0, nil, 0)
 	c.evaluated = optToCommandLn(prevLn, c.opt)
 	return c.evaluated
 }
@@ -646,8 +647,8 @@ func LogBaseOption(base float32) Option {
 
 // SampleRateOption sets sample rate.
 //
-// Default: 16000
-func SampleRateOption(rate int) Option {
+// Default: 16000.0
+func SampleRateOption(rate float32) Option {
 	return func(c *Config) {
 		c.opt[String("-samprate")] = rate
 	}
@@ -659,5 +660,12 @@ func SampleRateOption(rate int) Option {
 func InputEndianOption(endian string) Option {
 	return func(c *Config) {
 		c.opt[String("-input_endian")] = String(endian)
+	}
+}
+
+// UserOption sets a user specified option to a custom value.
+func UserOption(name string, v interface{}) Option {
+	return func(c *Config) {
+		c.opt[String(name)] = v
 	}
 }

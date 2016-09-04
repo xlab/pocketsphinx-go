@@ -26,7 +26,9 @@ func (n *NGramOptions) CommandLn() *pocketsphinx.CommandLn {
 	if n.evaluated != nil {
 		return n.evaluated
 	}
-	n.evaluated = optToCommandLn(nil, n.opt)
+	defn := pocketsphinx.Args()
+	prevLn := pocketsphinx.CommandLnParseR(nil, defn, 0, nil, 0)
+	n.evaluated = optToCommandLn(prevLn, n.opt)
 	return n.evaluated
 }
 
@@ -50,16 +52,25 @@ func (n *NGramOptions) Destroy() bool {
 
 // MMap options sets whether to use memory-mapped I/O.
 func (n *NGramOptions) MMap(v bool) {
+	if n.opt == nil {
+		n.opt = make(map[String]interface{})
+	}
 	n.opt[String("-mmap")] = v
 }
 
 // LanguageWeight to apply to the model.
 func (n *NGramOptions) LanguageWeight(v float32) {
+	if n.opt == nil {
+		n.opt = make(map[String]interface{})
+	}
 	n.opt[String("-lw")] = v
 }
 
 // WordInsertionPenalty to apply to the model.
 func (n *NGramOptions) WordInsertionPenalty(v float32) {
+	if n.opt == nil {
+		n.opt = make(map[String]interface{})
+	}
 	n.opt[String("-wip")] = v
 }
 

@@ -30,8 +30,8 @@ func (m *MLLR) Destroy() bool {
 
 // NewMLLR reads a speaker-adaptive linear transform from a file (mllr_matrix).
 // See http://cmusphinx.sourceforge.net/wiki/tutorialadapt for details.
-func NewMLLR(filename string) (*MLLR, error) {
-	m := pocketsphinx.MllrRead(filename + "\x00")
+func NewMLLR(filename String) (*MLLR, error) {
+	m := pocketsphinx.MllrRead(filename.S())
 	if m == nil {
 		err := fmt.Errorf("sphinx: failed to load MLLR transform matrix from %s", filename)
 		return nil, err

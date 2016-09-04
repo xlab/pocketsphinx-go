@@ -131,13 +131,13 @@ func (d *Decoder) WriteDict(dictFile String) bool {
 // recognized.
 //
 // word is a word string to add, e.g. "hello". phones is a whitespace-separated list of phoneme strings
-// describing pronunciation of the word, e.g. "H EH L OW". If update is true, updates the
+// describing pronunciation of the word, e.g. "HH AH L OW". If update is true, updates the
 // search module (whichever one is currently active) to recognize the newly added word.
 // If adding multiple words, it is more efficient to pass false here in all but the last word.
 //
 // Returns the internal ID (>= 0) of the newly added word.
-func (d *Decoder) AddWord(word, phones string, update bool) (id int32, ok bool) {
-	ret := pocketsphinx.AddWord(d.dec, word, phones, b(update))
+func (d *Decoder) AddWord(word, phones String, update bool) (id int32, ok bool) {
+	ret := pocketsphinx.AddWord(d.dec, word.S(), phones.S(), b(update))
 	if ret < 0 {
 		return 0, false
 	}
@@ -148,8 +148,8 @@ func (d *Decoder) AddWord(word, phones string, update bool) (id int32, ok bool) 
 //
 // Returns whitespace-spearated phone string describing the pronunciation of the word,
 // or empty string if word is not present in the dictionary.
-func (d *Decoder) LookupWord(word string) (string, bool) {
-	phones := pocketsphinx.LookupWord(d.dec, word)
+func (d *Decoder) LookupWord(word String) (string, bool) {
+	phones := pocketsphinx.LookupWord(d.dec, word.S())
 	if phones != nil {
 		return string(phones), true
 	}
