@@ -15,7 +15,7 @@
 * Active community (more than 400 users on Linkedin CMUSphinx group);
 * Wide range of tools for many speech-recognition related purposes (keyword spotting, alignment, pronuncation evaluation).
 
-Refer to http://cmusphinx.sourceforge.net/wiki/ for the futher info.
+Refer to http://cmusphinx.sourceforge.net/wiki/ for the further info.
 
 ## This project
 
