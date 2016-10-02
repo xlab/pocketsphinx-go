@@ -14,7 +14,6 @@ import (
 const (
 	samplesPerChannel = 512
 	sampleRate        = 16000
-	bitDepth          = 16
 	channels          = 1
 	sampleFormat      = portaudio.PaInt16
 )
