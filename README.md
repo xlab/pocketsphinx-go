@@ -20,7 +20,7 @@ Refer to http://cmusphinx.sourceforge.net/wiki/ for the further info.
 ## This project
 
 The main aim of the **pocketsphinx-go** project is to bring all those features to the Go programming language. Firstly,
-by leveraging awesome [cgogen](http://git.io/cgogen) framework (not yet released, sorry) I was able to create full-featured
+by leveraging awesome [cgogen](https://cgogen.com/) framework I was able to create full-featured
 bindings to the pocketsphinx core library and sphinxbase just in a few hours of config tweaking. Secondly, I added a high-level wrapper package on top of that so users won't be bothered too much by rough API and lack of documentation in godoc. The code is from the edge of both upstreams, so any new features added like yesterday will be automatically there in no time.
 
 ### package [pocketsphinx](/pocketsphinx) [![GoDoc](https://godoc.org/github.com/xlab/pocketsphinx-go/pocketsphinx?status.svg)](https://godoc.org/github.com/xlab/pocketsphinx-go/pocketsphinx)
