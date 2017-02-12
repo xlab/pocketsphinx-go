@@ -342,8 +342,12 @@ func KeywordsThresholdOption(threshold float64) Option {
 	}
 }
 
-// Options for finite state grammars.
-// TODO
+// FiniteStateGrammarsOption for finite state grammars.
+func FiniteStateGrammarsOption(filepath string) Option {
+	return func(c *Config) {
+		c.opt[String("-fsg")] = String(filepath)
+	}
+}
 
 // Options for statistical language models (N-Gram).
 
