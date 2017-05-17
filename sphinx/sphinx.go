@@ -320,5 +320,5 @@ func (d *Decoder) SetRawDataSize(frames int32) {
 func (d *Decoder) RawData() []int16 {
 	var size int32
 	pocketsphinx.GetRawdata(d.dec, d.rawdataBuf, &size)
-	return d.rawdataBuf[0][:size/2]
+	return d.rawdataBuf[0][:size]
 }
