@@ -87,11 +87,13 @@ By default it writes to the log, but if something seems strange, you may enable 
 
 ```
 $ ffplay -f s16le -ar 16000 -ac 1 -i out/000000000.raw
+
+$ play -r 16k -e signed-integer -b 16 -c 1 out/000000000.raw
 ```
 
 ## Rebuilding the package
 
-You will need to get the [cgogen](https://git.io/cgogen) tool installed first.
+You will need to get the [c-for-go](https://git.io/c-for-go) tool installed first.
 
 ```
 $ git clone https://github.com/xlab/pocketsphinx-go && cd pocketsphinx-go
@@ -102,8 +104,7 @@ $ make
 ## Contributing
 
 Feel free to share bugs, especially when method signature doesn't look like expected (`[]` instad of `*`, etc).
-Please also share this project in social networks so more people would know how to use offline voice recognition
-in their Go apps. Follow me at [@xlab_dev](https://twitter.com/xlab_dev).
+Please also share this project in social networks so more people would know how to use offline voice recognition in their Go apps.
 
 ## License
 
