@@ -1,5 +1,5 @@
 all:
-	cgogen pocketsphinx.yml
+	c-for-go pocketsphinx.yml
 
 clean:
 	rm -f pocketsphinx/cgo_helpers.go pocketsphinx/cgo_helpers.h pocketsphinx/doc.go pocketsphinx/types.go pocketsphinx/const.go
@@ -10,4 +10,3 @@ test:
 
 install:
 	cd pocketsphinx && go install
-	
