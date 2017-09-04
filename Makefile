@@ -1,5 +1,5 @@
 all:
-	c-for-go pocketsphinx.yml
+	c-for-go -maxmem 0x1fffffff pocketsphinx.yml
 
 clean:
 	rm -f pocketsphinx/cgo_helpers.go pocketsphinx/cgo_helpers.h pocketsphinx/cgo_helpers.c
