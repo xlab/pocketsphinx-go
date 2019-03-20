@@ -129,7 +129,7 @@ func (l *Lattice) Word(node *LatticeNode) string {
 
 // BaseWord gets base word string for this node.
 func (l *Lattice) BaseWord(node *LatticeNode) string {
-	return pocketsphinx.LatnodeBaseWord(l.lat, (*pocketsphinx.Latnode)(node))
+	return pocketsphinx.LatnodeBaseword(l.lat, (*pocketsphinx.Latnode)(node))
 }
 
 // Exits returns an iterator over exits from this node.
