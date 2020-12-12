@@ -74,6 +74,13 @@ func MFCLogDirOption(dir string) Option {
 	}
 }
 
+// FastFourierTransformOption
+func FastFourierTransformOption(points int) Option {
+	return func(c *Config) {
+		c.opt[String("-nfft")] = points
+	}
+}
+
 // RawLogDirOption sets directory to log raw audio files to.
 func RawLogDirOption(dir string) Option {
 	return func(c *Config) {
