@@ -322,3 +322,21 @@ func (d *Decoder) RawData() []int16 {
 	pocketsphinx.GetRawdata(d.dec, d.rawdataBuf, &size)
 	return d.rawdataBuf[0][:size]
 }
+
+// SetKeyphrase associates keyword search with the provided name. Activate
+// with Decoder.SetSearch()
+func (d *Decoder) SetKeyphrase(name string, keyphrase string) int32 {
+	return pocketsphinx.SetKeyphrase(d.dec, name, keyphrase)
+}
+
+// SetKws associates keyword search with the provided file. Activate
+// with Decoder.SetSearch()
+func (d *Decoder) SetKws(name string, keyfile string) int32 {
+	return pocketsphinx.SetKws(d.dec, name, keyfile)
+}
+
+// SetSearch activates the named search. The search must be set
+// beforehand with Decoder.SetKeyphrase() or Decoder.SetKws()
+func (d *Decoder) SetSearch(name string) int32 {
+	return pocketsphinx.SetSearch(d.dec, name)
+}
